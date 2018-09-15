@@ -24,26 +24,26 @@ plugin.init = function(data, callback) {
 	var controllers = require('./controllers');
 	SocketPlugins.composer = socketMethods;
 
-	data.router.get('/admin/plugins/composer-default', data.middleware.admin.buildHeader, controllers.renderAdminPage);
-	data.router.get('/api/admin/plugins/composer-default', controllers.renderAdminPage);
+	data.router.get('/admin/plugins/composer-lastlife', data.middleware.admin.buildHeader, controllers.renderAdminPage);
+	data.router.get('/api/admin/plugins/composer-lastlife', controllers.renderAdminPage);
 
 	callback();
 };
 
 plugin.appendConfig = function(config, callback) {
-	meta.settings.get('composer-default', function(err, settings) {
+	meta.settings.get('composer-lastlife', function(err, settings) {
 		if (err) {
 			return callback(null, config);
 		}
 
-		config['composer-default'] = settings;
+		config['composer-lastlife'] = settings;
 		callback(null, config);
 	});
 };
 
 plugin.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
-		route: '/plugins/composer-default',
+		route: '/plugins/composer-lastlife',
 		icon: 'fa-edit',
 		name: 'Composer (Default)'
 	});
@@ -81,6 +81,37 @@ plugin.getFormattingOptions = function(callback) {
 		callback(err, payload ? payload.options : null);
 	});
 };
+
+plugin.filterUserCustomSettings = function(data, next) {
+	data.settings.useComposerPage = data.settings.useComposerPage !== void 0 ? parseInt(data.settings.useComposerPage, 10) === 1 : false;
+
+	data.customSettings.push({
+	  title: 'Use Composer Page',
+	  content: `
+		  <div class="checkbox">
+			  <label>
+				  <input type="checkbox" data-property="useComposerPage"${data.settings.useComposerPage ? ' checked' : ''}>
+				  <i class="input-helper"></i>
+				  Use a separate page for composing topics and replies instead of the overlay composer.
+				  <a name="useComposerPage"></a>
+			  </label>
+		  </div>`
+	});
+  
+	next(null, data);
+};
+
+plugin.filterUserGetSettings = (data, next) => {
+	if (data.settings.useComposerPage === void 0) {
+		data.settings.useComposerPage = '0';
+	}
+
+	next(null, data);
+}
+
+plugin.actionSaveSettings = (data, next) => {
+	db.setObjectField(`user:${data.uid}:settings`, 'useComposerPage', data.settings.useComposerPage, next);
+}
 
 plugin.build = function(data, callback) {
 	var req = data.req;

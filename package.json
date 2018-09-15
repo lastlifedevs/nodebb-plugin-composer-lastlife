@@ -1,11 +1,11 @@
 {
-  "name": "nodebb-plugin-composer-default",
-  "version": "6.1.1",
-  "description": "Default composer for NodeBB",
+  "name": "nodebb-plugin-composer-lastlife",
+  "version": "0.0.0",
+  "description": "The default composer for NodeBB, with customizations for Last Life.",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NodeBB/nodebb-plugin-composer-default"
+    "url": "https://github.com/lastlifedevs/nodebb-plugin-composer-lastlife"
   },
   "keywords": [
     "nodebb",
@@ -19,7 +19,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NodeBB/nodebb-plugin-composer-default/issues"
+    "url": "https://github.com/lastlifedevs/nodebb-plugin-composer-lastlife/issues"
   },
   "readmeFilename": "README.md",
   "nbbpm": {

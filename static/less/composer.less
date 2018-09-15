@@ -1,3 +1,13 @@
+@color_1: #a3a3a3;
+@color_2: #dedede;
+@color_3: #ababab;
+@color_4: #ddd;
+@background_color_1: #161829;
+@background_color_2: #2a3256;
+@background_color_3: #1b1e2f;
+@background_color_4: #222941;
+@border_color_1: #403d4e;
+
 .define-if-not-set() {
 	@btn-primary-bg: darken(#428bca, 6.5%);
 	@btn-primary-color: #fff;
@@ -383,3 +393,92 @@
 
 @import './zen-mode.less';
 @import './page-compose.less';
+
+
+.composer {
+	.write {
+		font-size: inherit;
+	}
+	.preview {
+		font-size: inherit;
+	}
+	>.composer-container {
+		>.resizer {
+			>.trigger {
+				background: #293156;
+				border: 1px solid #293156;
+			}
+		}
+	}
+	.btn-toolbar.formatting-bar {
+		.formatting-group {
+			li {
+				color: @color_1;
+				&:focus {
+					background-color: @background_color_2;
+				}
+				&:hover {
+					background-color: @background_color_2;
+				}
+			}
+		}
+	}
+	.preview.well {
+		background-color: @background_color_3;
+		border-color: @border_color_1;
+	}
+}
+.composer.resizable {
+	background-color: @background_color_1;
+}
+[component="composer"].composer {
+	background-color: @background_color_1;
+}
+.taskbar {
+	.navbar-nav {
+		li.taskbar-composer {
+			a {
+				background: @ll-red;
+				&:active {
+					background: @ll-red;
+				}
+				&:focus {
+					background: @ll-red;
+				}
+				&:hover {
+					background: @ll-red;
+				}
+			}
+		}
+	}
+}
+.tags-container {
+	.bootstrap-tagsinput {
+		background-color: @background_color_4;
+		color: @color_2;
+		input {
+			&::placeholder {
+				color: @color_3;
+			}
+		}
+	}
+}
+.write {
+	background-color: @background_color_4;
+	color: @color_4;
+	&:focus {
+		outline: 1px solid @ll-white;
+	}
+}
+@media (min-width: 992px) {
+	.composer {
+		.title-container {
+			.title.form-control {
+				margin-left: 0;
+			}
+		}
+		textarea.write {
+			border-color: @border_color_1;
+		}
+	}
+}

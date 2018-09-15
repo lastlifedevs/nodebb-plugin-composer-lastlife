@@ -1,13 +1,16 @@
 {
-	"id": "nodebb-plugin-composer-default",
-	"url": "https://github.com/NodeBB/nodebb-plugin-composer-default",
+	"id": "nodebb-plugin-composer-lastlife",
+	"url": "https://github.com/lastlifedevs/nodebb-plugin-composer-lastlife",
 	"library": "library.js",
 	"hooks": [
 		{ "hook": "static:app.load", "method": "init" },
 		{ "hook": "filter:config.get", "method": "appendConfig" },
 		{ "hook": "filter:composer.build", "method": "build" },
 		{ "hook": "filter:admin.header.build", "method": "addAdminNavigation" },
-		{ "hook": "filter:meta.getLinkTags", "method": "addPrefetchTags" }
+		{ "hook": "filter:meta.getLinkTags", "method": "addPrefetchTags" },
+		{ "hook": "filter:user.customSettings", "method": "filterUserCustomSettings" },
+		{ "hook": "filter:user.getSettings",    "method": "filterUserGetSettings" },
+		{ "hook": "action:user.saveSettings",   "method": "actionSaveSettings" }
 	],
 	"less": [
 		"./static/less/composer.less"
