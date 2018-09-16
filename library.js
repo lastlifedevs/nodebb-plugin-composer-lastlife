@@ -11,6 +11,7 @@ var translator = module.parent.require('../public/src/modules/translator');
 var helpers = module.parent.require('./controllers/helpers');
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
 var socketMethods = require('./websockets');
+var db = module.parent.require('./database');
 
 var async = module.parent.require('async');
 var nconf = module.parent.require('nconf');
@@ -36,8 +37,16 @@ plugin.appendConfig = function(config, callback) {
 			return callback(null, config);
 		}
 
-		config['composer-lastlife'] = settings;
-		callback(null, config);
+		async.waterfall([
+			function(next) {
+				db.getObjectField('user:' + config['uid'] + ':settings', 'useComposerPage', next);
+			},
+			function(useComposerPage, next) {
+				settings.useComposerPage = useComposerPage;
+			config['composer-lastlife'] = settings;
+			next(null, config);
+			}
+		], callback);
 	});
 };
 
@@ -45,7 +54,7 @@ plugin.addAdminNavigation = function(header, callback) {
 	header.plugins.push({
 		route: '/plugins/composer-lastlife',
 		icon: 'fa-edit',
-		name: 'Composer (Default)'
+		name: 'Composer (Last Life)'
 	});
 
 	callback(null, header);
