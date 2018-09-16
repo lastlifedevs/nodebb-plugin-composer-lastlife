@@ -3,7 +3,9 @@
 	<div class="composer-container">
 		<nav class="navbar navbar-fixed-top mobile-navbar visible-xs visible-sm">
 			<div class="pull-left">
-				<button class="btn btn-sm btn-primary composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i></button>
+				<div class="groove-border-wrapper btn-wrapper">
+					<button class="btn btn-sm btn-primary composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i></button>
+				</div>
 			</div>
 			<!-- IF isTopic -->
 			<div class="category-name-container">
@@ -11,7 +13,9 @@
 			</div>
 			<!-- ENDIF isTopic -->
 			<div class="pull-right">
-				<button class="btn btn-sm btn-primary composer-submit" data-action="post" tabindex="-1"><i class="fa fa-chevron-right"></i></button>
+				<div class="groove-border-wrapper btn-wrapper">
+					<button class="btn btn-sm btn-primary composer-submit" data-action="post" tabindex="-1"><i class="fa fa-chevron-right"></i></button>
+				</div>
 			</div>
 			<!-- IF !isTopicOrMain -->
 			<h4 class="title">[[topic:composer.replying_to, "{title}"]]</h4>
