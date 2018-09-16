@@ -43,9 +43,12 @@
 			<!-- ENDIF isTopic -->
 
 			<div class="btn-group pull-right action-bar hidden-sm hidden-xs">
-				<button class="btn btn-default composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i> [[topic:composer.discard]]</button>
-
-				<button class="btn btn-primary composer-submit" data-action="post" tabindex="6"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
+				<div class="groove-border-wrapper btn-wrapper">
+					<button class="btn btn-default composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i> [[topic:composer.discard]]</button>
+				</div>
+				<div class="groove-border-wrapper btn-wrapper">
+					<button class="btn btn-primary composer-submit" data-action="post" tabindex="6"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
+				</div>
 			</div>
 		</div>
 

@@ -103,9 +103,13 @@
 				</ul>
 
 				<div class="btn-group pull-right action-bar">
-					<a href="{discardRoute}" class="btn btn-default composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i> [[topic:composer.discard]]</a>
+					<div class="groove-border-wrapper btn-wrapper">
+						<a href="{discardRoute}" class="btn btn-default composer-discard" data-action="discard" tabindex="-1"><i class="fa fa-times"></i> [[topic:composer.discard]]</a>
+					</div>
 
-					<button type="submit" form="compose-form" class="btn btn-primary composer-submit" data-action="post" tabindex="6"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
+					<div class="groove-border-wrapper btn-wrapper">
+						<button type="submit" form="compose-form" class="btn btn-primary composer-submit" data-action="post" tabindex="6"><i class="fa fa-check"></i> [[topic:composer.submit]]</button>
+					</div>
 				</div>
 			</div>
 		</div>
