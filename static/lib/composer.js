@@ -373,14 +373,15 @@ define('composer', [
 			drafts.init(postContainer, postData);
 		}
 
-		handleHelp(postContainer);
-
 		focusElements(postContainer);
 
 		// Hide "zen mode" if fullscreen API is not enabled/available (ahem, iOS...)
 		if (typeof screenfull !== 'undefined' && !screenfull.enabled) {
 			$('[data-format="zen"]').addClass('hidden');
 		}
+
+		let tagRowContainer = $('.tag-row');
+		tagRowContainer.toggleClass('hide', false);
 
 		$(window).trigger('action:composer.enhanced', {
 			postContainer: postContainer
@@ -491,6 +492,15 @@ define('composer', [
 
 			scrollStop.apply(postContainer.find('.write'));
 			focusElements(postContainer);
+			
+			let showBtn = postContainer.find('.write-container .toggle-preview'),
+			previewContainer = $('.preview-container'),
+			writeContainer = $('.write-container');
+			
+			previewContainer.toggleClass('hide', false);
+			writeContainer.toggleClass('maximized', false);
+			showBtn.toggleClass('hide', true);
+
 			onShow();
 		});
 
@@ -515,18 +525,6 @@ define('composer', [
 		window.history.pushState({
 			url: path
 		}, path, config.relative_path + '/' + path);
-	}
-
-	function handleHelp(postContainer) {
-		var helpBtn = postContainer.find('.help');
-		socket.emit('plugins.composer.renderHelp', function(err, html) {
-			if (!err && html && html.length > 0) {
-				helpBtn.removeClass('hidden');
-				helpBtn.on('click', function() {
-					bootbox.alert(html);
-				});
-			}
-		});
 	}
 
 	function activate(post_uuid) {

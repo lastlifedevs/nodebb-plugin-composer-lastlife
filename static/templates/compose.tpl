@@ -37,7 +37,7 @@
 			</div>
 			<!-- ENDIF showHandleInput -->
 			<!-- IF isTopic -->
-			<div class="category-list-container col-lg-3 col-md-12">
+			<div class="category-list-container col-3">
 
 			</div>
 			<!-- ENDIF isTopic -->
@@ -117,12 +117,12 @@
 		<div class="row write-preview-container">
 			<div class="col-md-6 col-sm-12 write-container">
 				<div class="help-text">
-					[[modules:composer.compose]] <span class="help hidden"><i class="fa fa-question-circle"></i></span>
+					<span class="help">Compose using <a href="https://commonmark.org/help/" target="_blank">Markdown (opens in new tab)</a></span>
 					<span class="toggle-preview hide">[[modules:composer.show_preview]]</span>
 				</div>
 				<textarea name="content" form="compose-form" class="write" tabindex="5"></textarea>
 			</div>
-			<div class="col-md-6 hidden-sm hidden-xs preview-container">
+			<div class="col-md-6 hidden-sm hidden-xs preview-container hide">
 				<div class="help-text">
 					<span class="toggle-preview">[[modules:composer.hide_preview]]</span>
 				</div>
@@ -131,7 +131,7 @@
 		</div>
 
 		<!-- IF isTopicOrMain -->
-		<div class="tag-row">
+		<div class="tag-row hide">
 			<div class="tags-container">
 				<div class="btn-group dropup <!-- IF !tagWhitelist.length -->hidden<!-- ENDIF !tagWhitelist.length -->" component="composer/tag/dropdown">
 					<button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">

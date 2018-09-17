@@ -1,5 +1,6 @@
 // Last Life Color Scheme
 @ll-blue: #1a1d2f;
+@ll-blue-accent: #293156;
 @ll-red: #901328;
 @ll-green: #43a866;
 @ll-yellow: #f4c54e;
@@ -405,6 +406,7 @@
 .composer {
 	.write {
 		font-size: inherit;
+		border-color: @ll-blue-accent;
 	}
 	.preview {
 		font-size: inherit;
@@ -412,8 +414,8 @@
 	>.composer-container {
 		>.resizer {
 			>.trigger {
-				background: #293156;
-				border: 1px solid #293156;
+				background: @ll-blue-accent;
+				border: 1px solid @ll-blue-accent;
 			}
 		}
 	}
@@ -435,17 +437,23 @@
 		border-color: @border_color_1;
 	}
 	.mobile-navbar {
-			background: #1a1d2f;
-			color: #bfcde0;
+			background: @ll-blue;
+			color: @ll-white;
 	}
 	.category-selector {
 		background: #1a1d2f;
 	}
 	.category-selector li {
-		color: #bfcde0;
+		color: @ll-white;
 	}
 	.category-selector li.active {
-		background-color: #293156;
+		background-color: @ll-blue-accent;
+	}
+	.title-container {
+		border-bottom: 1px solid @ll-blue-accent;
+	}
+	.help {
+		cursor: default;
 	}
 }
 .composer.resizable {

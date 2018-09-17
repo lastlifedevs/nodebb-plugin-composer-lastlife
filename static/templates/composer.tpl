@@ -120,7 +120,7 @@
 		<div class="row write-preview-container">
 			<div class="write-container">
 				<div class="help-text">
-					<span class="help hidden">[[modules:composer.compose]] <i class="fa fa-question-circle"></i></span>
+					<span class="help">Compose using <a href="https://commonmark.org/help/" target="_blank">Markdown (opens in new tab)</a></span>
 					<span class="toggle-preview hide">[[modules:composer.show_preview]]</span>
 				</div>
 				<textarea class="write" tabindex="4"></textarea>
