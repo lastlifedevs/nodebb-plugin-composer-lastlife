@@ -10,7 +10,7 @@ var privileges = require.main.require('./src/privileges');
 var translator = require.main.require('./src/translator');
 var helpers = require.main.require('./src/controllers/helpers');
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
-var socketMethods = require.main.require('./src/websockets');
+var socketMethods = require('./websockets');
 var db = require.main.require('./src/database');
 
 var async = module.parent.require('async');
