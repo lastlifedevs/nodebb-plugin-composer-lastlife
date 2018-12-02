@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-composer-lastlife",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "The default composer for NodeBB, with customizations for Last Life.",
   "main": "library.js",
   "repository": {
