@@ -93,17 +93,19 @@ define('composer/tags', function() {
 	};
 
 	tags.onChangeCategory = function (postContainer, postData, cid) {
-		$.get(config.relative_path+'/api/category/' + cid, function (data) {
+		$.get(config.relative_path + '/api/category/' + cid, function (data) {
 			var tagDropdown = postContainer.find('[component="composer/tag/dropdown"]');
 			if (!tagDropdown.length) {
 				return;
 			}
 
 			toggleTagInput(postContainer, postData, data);
-			tagDropdown.toggleClass('hidden', !data.tagWhitelist.length);
-			app.parseAndTranslate('composer', 'tagWhitelist', { tagWhitelist: data.tagWhitelist }, function (html) {
-				tagDropdown.find('.dropdown-menu').html(html);
-			});
+			tagDropdown.toggleClass('hidden', !data.tagWhitelist || !data.tagWhitelist.length);
+			if (data.tagWhitelist) {
+				app.parseAndTranslate('composer', 'tagWhitelist', { tagWhitelist: data.tagWhitelist }, function (html) {
+					tagDropdown.find('.dropdown-menu').html(html);
+				});
+			}
 		});
 	};
 

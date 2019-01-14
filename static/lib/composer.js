@@ -32,8 +32,7 @@ define('composer', [
 	});
 
 	$(window).on('popstate', function() {
-		var env = composer.bsEnvironment;
-
+		var env = utils.findBootstrapEnvironment();
 		if (composer.active && (env === 'xs' || env ==='sm')) {
 			if (!composer.posts[composer.active].modified) {
 				composer.discard(composer.active);
@@ -121,9 +120,16 @@ define('composer', [
 			return composer.load(existingUUID);
 		}
 
-		translator.translate('[[topic:composer.new_topic]]', function(newTopicStr) {
+		var actionText = '[[topic:composer.new_topic]]';
+		if (post.action === 'posts.reply') {
+			actionText = '[[topic:composer.replying_to]]';
+		} else if (post.action === 'posts.edit') {
+			actionText = '[[topic:composer.editing]]';
+		}
+
+		translator.translate(actionText, function(translatedAction) {
 			taskbar.push('composer', uuid, {
-				title: post.title ? post.title : newTopicStr
+				title: translatedAction.replace('%1', '"' + post.title + '"')
 			});
 		});
 
@@ -340,20 +346,26 @@ define('composer', [
 			e.preventDefault();
 
 			if (!composer.posts[post_uuid].modified) {
-				removeComposerHistory();
-				return composer.discard(post_uuid);
+				composer.discard(post_uuid);
+				return removeComposerHistory();
 			}
 
 			var btn = $(this).prop('disabled', true);
 			translator.translate('[[modules:composer.discard]]', function(translated) {
 				bootbox.confirm(translated, function(confirm) {
 					if (confirm) {
-						removeComposerHistory();
 						composer.discard(post_uuid);
+						removeComposerHistory();
 					}
 					btn.prop('disabled', false);
 				});
 			});
+		});
+
+		postContainer.find('.composer-minimize').on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			composer.minimize(post_uuid);
 		});
 
 		bodyEl.on('input propertychange', function() {
@@ -544,7 +556,7 @@ define('composer', [
 			} else {
 				postContainer.find('textarea').focus().putCursorAtEnd();
 			}
-		}, 1);
+		}, 20);
 	}
 
 	function post(post_uuid) {
@@ -635,6 +647,7 @@ define('composer', [
 
 				// Restore composer on error
 				composer.load(post_uuid);
+				textareaEl.prop('readonly', false);
 
 				return app.alertError(err.message);
 			}
@@ -693,6 +706,9 @@ define('composer', [
 		}
 		onHide();
 	};
+
+	// Alias to .discard();
+	composer.close = composer.discard;
 
 	composer.minimize = function(post_uuid) {
 		var postContainer = $('.composer[data-uuid="' + post_uuid + '"]');

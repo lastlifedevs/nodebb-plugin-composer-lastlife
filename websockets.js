@@ -7,6 +7,7 @@ var privileges = require.main.require('./src/privileges');
 var posts = require.main.require('./src/posts');
 var topics = require.main.require('./src/topics');
 var plugins = require.main.require('./src/plugins');
+var categories = require.main.require('./src/categories');
 
 var server = require.main.require('./src/socket.io');
 
@@ -89,4 +90,52 @@ Sockets.renderHelp = function(socket, data, callback) {
 
 Sockets.getFormattingOptions = function(socket, data, callback) {
 	module.parent.exports.getFormattingOptions(callback);
+};
+
+Sockets.getCategoriesForSelect = function (socket, data, callback) {
+	var cids;
+	async.waterfall([
+		function (next) {
+			categories.getAllCidsFromSet('categories:cid', next);
+		},
+		function (_cids, next) {
+			cids = _cids;
+			async.parallel({
+				allowed: function (next) {
+					privileges.categories.isUserAllowedTo('topics:create', cids, socket.uid, next);
+				},
+				categories: function (next) {
+					categories.getCategoriesData(cids, next);
+				},
+			}, next);
+		},
+		function (results, next) {
+			var _ = require.main.require('lodash')
+			categories.getTree(results.categories);
+
+			var cidToCategory = _.zipObject(cids, results.categories);
+
+			results.categories = results.categories.filter(function (c, i) {
+				if (!c) {
+					return false;
+				}
+				if (results.allowed[i] && !c.link) {
+					return true;
+				}
+
+				const hasChildren = !!c.children.length;
+				if (hasChildren || c.link) {
+					c.disabledClass = true;
+				} else if (c.parent && c.parent.cid && cidToCategory[c.parent.cid]) {
+					cidToCategory[c.parent.cid].children = cidToCategory[c.parent.cid].children.filter(child => {
+						return child.cid !== c.cid;
+					});
+				}
+
+				return hasChildren;
+			});
+
+			categories.buildForSelectCategories(results.categories, next);
+		},
+	], callback);
 };
