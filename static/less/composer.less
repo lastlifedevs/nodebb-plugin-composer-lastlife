@@ -115,6 +115,11 @@
 		.category-list {
 			padding: 0 2rem;
 		}
+
+		.quick-search-results {
+			top: 70px;
+			left: 10px;
+		}
 	}
 
 	.category-tag-row {
@@ -235,6 +240,9 @@
 			border: 0;
 			padding: 4px 6px;
 			box-shadow: none;
+			display: block;
+			max-height: 80px;
+			overflow: auto;
 
 			input {
 				font-size: 16px;
@@ -291,7 +299,7 @@
 		display: none;
 		position: absolute;
 		width: 100%;
-		top: 10px;
+		top: 0px;
 		height: 0;
 
 		.pointer;
@@ -299,27 +307,34 @@
 		.trigger {
 			position: relative;
 			display: block;
-			width: 32px;
-			height: 32px;
 			top: -20px;
 			margin: 0 auto;
 			margin-left: 20px;
-
-			background: #333;
-			border: 1px solid #333;
-			.border-radius(50%);
-
 			line-height: 26px;
+			.transition(filter .15s linear);
+
+			&:hover {
+				filter: invert(100%);
+				cursor: ns-resize;
+			}
 
 			i {
+				width: 32px;
+				height: 32px;
+				background: #333;
+				border: 1px solid #333;
+				.border-radius(50%);
+
 				position: relative;
-				color: #fff;
+				left: -50%;
+
+				color: #FFF;
 				font-size: 16px;
 
 				&:before {
 					content: @fa-var-arrows-v;
 					position: relative;
-					top: 3px;
+					top: 25%;
 				}
 			}
 		}
@@ -406,6 +421,52 @@
 			}
 		}
 	}
+	.draft-icon {
+		font-family: 'FontAwesome';
+		color: @state-success-text;
+		margin: 0 1em;
+		opacity: 0;
+
+		&::before {
+			content: @fa-var-save;
+			position: relative;
+			top: 25%;
+		}
+
+		&::after {
+			content: @fa-var-check;
+			position: relative;
+			top: 18px;
+			font-size: 0.7em;
+			left: -15%;
+		}
+
+		&.active {
+			animation: draft-saved 3s ease;
+		}
+	}
+}
+
+@keyframes draft-saved {
+	0%, 100% {
+		opacity: 0;
+	}
+
+	15% {
+		opacity: 1;
+	}
+
+	30% {
+		opacity: 0.5;
+	}
+
+	45% {
+		opacity: 1;
+	}
+
+	85% {
+		opacity: 1;
+	}
 }
 
 @media (max-width: @screen-sm-max) {
@@ -414,12 +475,17 @@
 		body {
 			height: 100%;
 			overflow: hidden;
-			position: relative;
-		}
+			z-index: @zindex-popover + 10;
 
-		.composer {
-			height: 100%;
-			overflow: hidden;
+			.draft-icon {
+				position: absolute;
+				top: 1em;
+				right: 0em;
+
+				&::after {
+					top: 7px;
+				}
+			}
 		}
 
 		body {

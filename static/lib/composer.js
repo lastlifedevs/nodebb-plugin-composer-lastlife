@@ -385,6 +385,10 @@ define('composer', [
 			drafts.init(postContainer, postData);
 		}
 
+		handleHelp(postContainer);
+
+		handleSearch(postContainer);
+
 		focusElements(postContainer);
 
 		// Hide "zen mode" if fullscreen API is not enabled/available (ahem, iOS...)
@@ -537,6 +541,40 @@ define('composer', [
 		window.history.pushState({
 			url: path
 		}, path, config.relative_path + '/' + path);
+	}
+
+	function handleHelp(postContainer) {
+		var helpBtn = postContainer.find('.help');
+		socket.emit('plugins.composer.renderHelp', function(err, html) {
+			if (!err && html && html.length > 0) {
+				helpBtn.removeClass('hidden');
+				helpBtn.on('click', function() {
+					bootbox.alert(html);
+				});
+			}
+		});
+	}
+
+	function handleSearch(postContainer) {
+		var uuid = postContainer.attr('data-uuid');
+		var isEditing = composer.posts[uuid] && composer.posts[uuid].action === 'posts.edit';
+		var env = utils.findBootstrapEnvironment();
+		var isMobile = env === 'xs' || env === 'sm';
+		if (isEditing || isMobile) {
+			return;
+		}
+
+		var searchInput = postContainer.find('input.title');
+		var quickSearchResults = postContainer.find('.quick-search-results');
+		searchInput.on('blur', function () {
+			setTimeout(function () {
+				quickSearchResults.addClass('hidden');
+			}, 100);
+		});
+		app.enableTopicSearch({
+			inputEl: searchInput,
+			resultEl: quickSearchResults,
+		});
 	}
 
 	function activate(post_uuid) {
@@ -693,7 +731,6 @@ define('composer', [
 	composer.discard = function(post_uuid) {
 		if (composer.posts[post_uuid]) {
 			var postContainer = $('.composer[data-uuid="' + post_uuid + '"]');
-			postContainer.find('.write').textcomplete('destroy');
 			postContainer.remove();
 			drafts.removeDraft(composer.posts[post_uuid].save_id);
 
@@ -702,7 +739,9 @@ define('composer', [
 			taskbar.discard('composer', post_uuid);
 			$('[data-action="post"]').removeAttr('disabled');
 
-			$(window).trigger('action:composer.discard');
+			$(window).trigger('action:composer.discard', {
+				post_uuid: post_uuid,
+			});
 		}
 		onHide();
 	};

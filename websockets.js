@@ -8,8 +8,7 @@ var posts = require.main.require('./src/posts');
 var topics = require.main.require('./src/topics');
 var plugins = require.main.require('./src/plugins');
 var categories = require.main.require('./src/categories');
-
-var server = require.main.require('./src/socket.io');
+var user = require.main.require('./src/user');
 
 var Sockets = module.exports;
 
@@ -40,7 +39,7 @@ Sockets.push = function(socket, pid, callback) {
 				isMain: function(next) {
 					posts.isMain(pid, next);
 				}
-			}, next)
+			}, next);
 		},
 		function (results, next) {
 			if (!results.topic) {
@@ -107,35 +106,54 @@ Sockets.getCategoriesForSelect = function (socket, data, callback) {
 				categories: function (next) {
 					categories.getCategoriesData(cids, next);
 				},
+				isModerator: function (next) {
+					user.isModerator(socket.uid, cids, next);
+				},
+				isAdmin: function (next) {
+					user.isAdministrator(socket.uid, next);
+				},
 			}, next);
 		},
 		function (results, next) {
-			var _ = require.main.require('lodash')
+			var _ = require.main.require('lodash');
 			categories.getTree(results.categories);
 
+			results.allowed = results.allowed.map(function (allowed, i) {
+				return results.isAdmin || results.isModerator[i] || allowed;
+			});
+
+			var cidToAllowed = _.zipObject(cids, results.allowed);
 			var cidToCategory = _.zipObject(cids, results.categories);
 
-			results.categories = results.categories.filter(function (c, i) {
+			results.categories = results.categories.filter(function (c) {
 				if (!c) {
 					return false;
 				}
-				if (results.allowed[i] && !c.link) {
-					return true;
+
+				const hasChildren = hasPostableChildren(c, cidToAllowed);
+				const shouldBeRemoved = !hasChildren && (!cidToAllowed[c.cid] || c.link || c.disabled);
+				const shouldBeDisaplayedAsDisabled = hasChildren && (!cidToAllowed[c.cid] || c.link || c.disabled);
+				if (shouldBeDisaplayedAsDisabled) {
+					c.disabledClass = true;
 				}
 
-				const hasChildren = !!c.children.length;
-				if (hasChildren || c.link) {
-					c.disabledClass = true;
-				} else if (c.parent && c.parent.cid && cidToCategory[c.parent.cid]) {
+				if (shouldBeRemoved && c.parent && c.parent.cid && cidToCategory[c.parent.cid]) {
 					cidToCategory[c.parent.cid].children = cidToCategory[c.parent.cid].children.filter(child => {
 						return child.cid !== c.cid;
 					});
 				}
 
-				return hasChildren;
+				return !shouldBeRemoved;
 			});
 
 			categories.buildForSelectCategories(results.categories, next);
 		},
 	], callback);
 };
+
+function hasPostableChildren(category, cidToAllowed) {
+	if (!Array.isArray(category.children) || !category.children.length) {
+		return false;
+	}
+	return category.children.some(c => c && cidToAllowed[c.cid]);
+}

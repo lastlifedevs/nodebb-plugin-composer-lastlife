@@ -29,25 +29,23 @@
 			<div class="col-sm-3 col-md-12">
 				<input class="handle form-control" type="text" tabindex="1" placeholder="[[topic:composer.handle_placeholder]]" value="{handle}" />
 			</div>
-			<div>
-				<!-- IF isTopicOrMain -->
-				<input class="title form-control" type="text" tabindex="1" placeholder="[[topic:composer.title_placeholder]]" value="{title}"/>
-				<!-- ELSE -->
-				<span class="title form-control">[[topic:composer.replying_to, "{title}"]]</span>
-				<!-- ENDIF isTopicOrMain -->
-			</div>
-			<!-- ELSE -->
-			<div>
-				<!-- IF isTopicOrMain -->
-				<input class="title form-control" type="text" tabindex="1" placeholder="[[topic:composer.title_placeholder]]" value="{title}"/>
-				<!-- ELSE -->
-				<span class="title form-control">[[topic:composer.replying_to, "{title}"]]</span>
-				<!-- ENDIF isTopicOrMain -->
-			</div>
 			<!-- ENDIF showHandleInput -->
+			<div>
+				<!-- IF isTopicOrMain -->
+				<input class="title form-control" type="text" tabindex="1" placeholder="[[topic:composer.title_placeholder]]" value="{title}"/>
+				<!-- ELSE -->
+				<span class="title form-control">[[topic:composer.replying_to, "{title}"]]</span>
+				<!-- ENDIF isTopicOrMain -->
+				<ul class="dropdown-menu quick-search-results hidden">
+					<!-- IMPORT partials/quick-search-results.tpl -->
+				</ul>
+			</div>
+
 			<!-- IF isTopic -->
 			<div class="category-list-container hidden-sm hidden-xs"></div>
 			<!-- ENDIF isTopic -->
+
+			<div class="pull-right draft-icon"></div>
 
 			<div class="btn-group pull-right action-bar hidden-sm hidden-xs">
 				<div class="groove-border-wrapper btn-wrapper">
@@ -126,6 +124,7 @@
 					<span class="help">Compose using <a href="https://commonmark.org/help/" target="_blank">Markdown (opens in new tab)</a></span>
 					<span class="toggle-preview hide">[[modules:composer.show_preview]]</span>
 				</div>
+				<div class="pull-right draft-icon hidden-md hidden-lg"></div>
 				<textarea class="write" tabindex="4"></textarea>
 			</div>
 			<div class="hidden-sm hidden-xs preview-container">

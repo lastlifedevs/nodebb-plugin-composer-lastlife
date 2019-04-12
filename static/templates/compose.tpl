@@ -20,12 +20,16 @@
 			<div class="col-sm-3 col-md-12">
 				<input class="handle form-control" type="text" tabindex="1" placeholder="[[topic:composer.handle_placeholder]]" value="{handle}" />
 			</div>
+			<!-- ENDIF showHandleInput -->
 			<div class="<!-- IF isTopic -->col-lg-9<!-- ELSE -->col-lg-12<!-- ENDIF isTopic --> col-md-12">
 				<!-- IF isTopicOrMain -->
 				<input name="title" form="compose-form" class="title form-control" type="text" tabindex="1" placeholder="[[topic:composer.title_placeholder]]" value="{topicTitle}"/>
 				<!-- ELSE -->
 				<span class="title">[[topic:composer.replying_to, "{topicTitle}"]]</span>
 				<!-- ENDIF isTopicOrMain -->
+				<ul class="dropdown-menu quick-search-results hidden">
+					<!-- IMPORT partials/quick-search-results.tpl -->
+				</ul>
 			</div>
 			<!-- ELSE -->
 			<div class="<!-- IF isTopic -->col-lg-9<!-- ELSE -->col-lg-12<!-- ENDIF isTopic --> col-md-12">
@@ -39,7 +43,8 @@
 			<!-- IF isTopic -->
 			<div class="category-list-container col-3">
 
-			</div>
+			<!-- IF isTopic -->
+			<div class="category-list-container col-lg-3 col-md-3"></div>
 			<!-- ENDIF isTopic -->
 		</div>
 
