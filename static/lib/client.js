@@ -26,14 +26,19 @@ $(document).ready(function() {
 				var uid = saveObj[1];
 				var type = saveObj[2];
 				var id = saveObj[3];
-				var content = drafts.getDraft(save_id);
+				var content = drafts.get(save_id);
 
 				// If draft is already open, do nothing
 				if (open.indexOf(save_id) !== -1) {
 					return;
 				}
 
-				if (!content || !content.length || parseInt(app.user.uid, 10) !== parseInt(uid, 10)) {
+				// Don't open other peoples' drafts
+				if (parseInt(app.user.uid, 10) !== parseInt(uid, 10)) {
+					return;
+				}
+
+				if (!content || (content.text && content.title && !content.text.title && !content.text.length)) {
 					// Empty content, remove from list of open drafts
 					drafts.updateVisibility('available', save_id);
 					drafts.updateVisibility('open', save_id);
@@ -43,13 +48,13 @@ $(document).ready(function() {
 				if (type === 'cid') {
 					composer.newTopic({
 						cid: id,
-						title: '',
-						body: content,
+						title: content.title,
+						body: content.text,
 						tags: [],
 					});
 				} else if (type === 'tid') {
 					socket.emit('topics.getTopic', id, function (err, topicObj) {
-						composer.newReply(id, undefined, topicObj.title, content);
+						composer.newReply(id, undefined, topicObj.title, content.text);
 					});
 				} else if (type === 'pid') {
 					composer.editPost(id);
@@ -57,24 +62,6 @@ $(document).ready(function() {
 			});
 		});
 	}
-
-	$(window).on('unload', function (e) {
-		// Update visibility on all open composers
-		try {
-			var open = localStorage.getItem('drafts:open');
-			open = JSON.parse(open) || [];
-		} catch (e) {
-			console.warn('[composer/drafts] Could not read list of open/available drafts');
-			open = [];
-		}
-		if (open.length) {
-			require(['composer/drafts'], function (drafts) {
-				open.forEach(function (save_id) {
-					drafts.updateVisibility('open', save_id);
-				});
-			});
-		}
-	});
 
 	$(window).on('action:composer.topic.new', function(ev, data) {
 		if (config['composer-lastlife'].composeRouteEnabled !== 'on' 

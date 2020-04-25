@@ -7,11 +7,11 @@ var posts = require.main.require('./src/posts');
 var user = require.main.require('./src/user');
 var meta = require.main.require('./src/meta');
 var privileges = require.main.require('./src/privileges');
-var translator = require.main.require('./public/src/modules/translator');
+var translator = require.main.require('./src/translator');
 var helpers = require.main.require('./src/controllers/helpers');
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
 var socketMethods = require('./websockets');
-var db = require.main.require('./src/database');
+var url = require('url');
 
 var async = module.parent.require('async');
 var nconf = module.parent.require('nconf');
@@ -129,13 +129,16 @@ plugin.build = function(data, callback) {
 
 	if (req.query.p) {
 		if (!res.locals.isAPI) {
-			if (req.query.p.startsWith(nconf.get('relative_path'))) {
-				req.query.p = req.query.p.replace(nconf.get('relative_path'), '');
+			var a;
+			try {
+				a = url.parse(req.query.p, true, true)
+			} catch (e) {
+				return helpers.redirect(res, '/');
 			}
-
-			return helpers.redirect(res, req.query.p);
+			return helpers.redirect(res, '/' + (a.path || '').replace(/^\/*/, '') );
 		} else {
-			return res.render('', {});
+			res.render('', {});
+			return;
 		}
 	} else if (!req.query.pid && !req.query.tid && !req.query.cid) {
 		return helpers.redirect(res, '/');

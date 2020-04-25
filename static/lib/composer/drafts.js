@@ -19,6 +19,26 @@ define('composer/drafts', function() {
 				saveDraft(postContainer, draftIconEl, postData);
 			}, 1000);
 		});
+
+		draftIconEl.on('animationend', function () {
+			$(this).toggleClass('active', false);
+		});
+
+		$(window).on('unload', function (e) {
+			// Update visibility on all open composers
+			try {
+				var open = localStorage.getItem('drafts:open');
+				open = JSON.parse(open) || [];
+			} catch (e) {
+				console.warn('[composer/drafts] Could not read list of open/available drafts');
+				open = [];
+			}
+			if (open.length) {
+				open.forEach(function (save_id) {
+					drafts.updateVisibility('open', save_id);
+				});
+			}
+		});
 	};
 
 	function resetTimeout() {
@@ -28,21 +48,30 @@ define('composer/drafts', function() {
 		}
 	}
 
+	// deprecated, for removal v1.14.x
 	drafts.getDraft = function(save_id) {
+		console.warn('[composer/drafts] drafts.getDraft is deprecated! Use drafts.get() instead.');
 		return localStorage.getItem(save_id);
 	};
 
+	drafts.get = function(save_id) {
+		return {
+			title: localStorage.getItem(save_id + ':title'),
+			text: localStorage.getItem(save_id),
+		}
+	}
+
 	function saveDraft(postContainer, draftIconEl, postData) {
 		var raw;
+		var title;
 
 		if (canSave() && postData && postData.save_id && postContainer.length) {
+			title = postContainer.find('input.title').val();
 			raw = postContainer.find('textarea').val();
 			if (raw.length) {
 				localStorage.setItem(postData.save_id, raw);
-				draftIconEl.removeClass('active');
-				setTimeout(function () {
-					draftIconEl.addClass('active');
-				});
+				localStorage.setItem(postData.save_id + ':title', title);
+				draftIconEl.toggleClass('active', true);
 			} else {
 				drafts.removeDraft(postData.save_id);
 			}
@@ -58,7 +87,9 @@ define('composer/drafts', function() {
 		drafts.updateVisibility('available', save_id);
 		drafts.updateVisibility('open', save_id);
 
-		return localStorage.removeItem(save_id);
+		localStorage.removeItem(save_id);
+		localStorage.removeItem(save_id + ':title');
+		return;
 	};
 
 	drafts.updateVisibility =  function (set, save_id, add) {
