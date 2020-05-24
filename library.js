@@ -12,6 +12,7 @@ var helpers = require.main.require('./src/controllers/helpers');
 var SocketPlugins = require.main.require('./src/socket.io/plugins');
 var socketMethods = require('./websockets');
 var url = require('url');
+var db = require.main.require('./src/database');
 
 var async = module.parent.require('async');
 var nconf = module.parent.require('nconf');
@@ -37,8 +38,16 @@ plugin.appendConfig = function(config, callback) {
 			return callback(null, config);
 		}
 
-		config['composer-lastlife'] = settings;
-		callback(null, config);
+		async.waterfall([
+			function(next) {
+				db.getObjectField('user:' + config['uid'] + ':settings', 'useComposerPage', next);
+			},
+			function(useComposerPage, next) {
+				settings.useComposerPage = useComposerPage;
+			config['composer-lastlife'] = settings;
+			next(null, config);
+			}
+		], callback);
 	});
 };
 
@@ -82,6 +91,37 @@ plugin.getFormattingOptions = function(callback) {
 		callback(err, payload ? payload.options : null);
 	});
 };
+
+plugin.filterUserCustomSettings = function(data, next) {
+	data.settings.useComposerPage = data.settings.useComposerPage !== void 0 ? parseInt(data.settings.useComposerPage, 10) === 1 : false;
+
+	data.customSettings.push({
+	  title: 'Use Composer Page',
+	  content: `
+		  <div class="checkbox">
+			  <label>
+				  <input type="checkbox" data-property="useComposerPage"${data.settings.useComposerPage ? ' checked' : ''}>
+				  <i class="input-helper"></i>
+				  Use a separate page for composing topics and replies instead of the overlay composer.
+				  <a name="useComposerPage"></a>
+			  </label>
+		  </div>`
+	});
+  
+	next(null, data);
+};
+
+plugin.filterUserGetSettings = (data, next) => {
+	if (data.settings.useComposerPage === void 0) {
+		data.settings.useComposerPage = '0';
+	}
+
+	next(null, data);
+}
+
+plugin.actionSaveSettings = (data, next) => {
+	db.setObjectField(`user:${data.uid}:settings`, 'useComposerPage', data.settings.useComposerPage, next);
+}
 
 plugin.build = function(data, callback) {
 	var req = data.req;
