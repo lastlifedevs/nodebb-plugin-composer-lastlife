@@ -76,10 +76,7 @@
 						<!-- ENDIF privileges.upload:post:image -->
 						<!-- IF privileges.upload:post:file -->
 						<li class="file-upload-btn hide" data-format="upload" tabindex="-1" title="[[modules:composer.upload-file]]">
-							<span class="fa-stack">
-								<i class="fa fa-file-o fa-stack-1x"></i>
-								<i class="fa fa-arrow-up fa-stack-1x"></i>
-							</span>
+							<i class="fa fa-upload"></i>
 						</li>
 						<!-- ENDIF privileges.upload:post:file -->
 					<!--<![endif]-->
