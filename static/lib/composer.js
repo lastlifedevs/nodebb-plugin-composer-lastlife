@@ -144,14 +144,12 @@ define('composer', [
 		});
 
 		// Construct a save_id
-		if (0 !== parseInt(app.user.uid, 10)) {
-			if (post.hasOwnProperty('cid')) {
-				post.save_id = ['composer', app.user.uid, 'cid', post.cid].join(':');
-			} else if (post.hasOwnProperty('tid')) {
-				post.save_id = ['composer', app.user.uid, 'tid', post.tid].join(':');
-			} else if (post.hasOwnProperty('pid')) {
-				post.save_id = ['composer', app.user.uid, 'pid', post.pid].join(':');
-			}
+		if (post.hasOwnProperty('cid')) {
+			post.save_id = ['composer', app.user.uid, 'cid', post.cid].join(':');
+		} else if (post.hasOwnProperty('tid')) {
+			post.save_id = ['composer', app.user.uid, 'tid', post.tid].join(':');
+		} else if (post.hasOwnProperty('pid')) {
+			post.save_id = ['composer', app.user.uid, 'pid', post.pid].join(':');
 		}
 
 		// Post is opened, save to list of opened drafts
@@ -195,7 +193,7 @@ define('composer', [
 			title: data.title || '',
 			body: data.body || '',
 			tags: data.tags || [],
-			modified: (data.title.length || data.body.length ) ? true : false,
+			modified: ((data.title && data.title.length) || (data.body && data.body.length)) ? true : false,
 			isMain: true
 		};
 
@@ -253,7 +251,7 @@ define('composer', [
 				toPid: toPid,
 				title: title,
 				body: translated,
-				modified: (title.length || body.length ) ? true : false,
+				modified: ((title && title.length) || (translated && translated.length)) ? true : false,
 				isMain: false
 			});
 		});
@@ -303,6 +301,7 @@ define('composer', [
 		}
 
 		var titleEl = postContainer.find('input.title');
+		var handleEl = postContainer.find('input.handle');
 		var bodyEl = postContainer.find('textarea');
 		var draft = drafts.get(postData.save_id);
 		var submitBtn = postContainer.find('.composer-submit');
@@ -316,7 +315,7 @@ define('composer', [
 		postContainer.find('.img-upload-btn').removeClass('hide');
 		postContainer.find('#files.lt-ie9').removeClass('hide');
 
-		if (config.allowFileUploads) {
+		if (app.user.privileges['upload:post:file']) {
 			postContainer.find('.file-upload-btn').removeClass('hide');
 			postContainer.find('#files.lt-ie9').removeClass('hide');
 		}
@@ -394,15 +393,14 @@ define('composer', [
 		if (draft && draft.title) {
 			titleEl.val(draft.title);
 		}
-		bodyEl.val(draft.text ? draft.text : postData.body);
-		if (app.user.uid > 0) {
-			drafts.init(postContainer, postData);
+		if (draft && draft.handle) {
+			handleEl.val(draft.handle);
 		}
+		bodyEl.val(draft.text ? draft.text : postData.body);
 
+		drafts.init(postContainer, postData);
 		handleHelp(postContainer);
-
 		handleSearch(postContainer);
-
 		focusElements(postContainer);
 
 		// Hide "zen mode" if fullscreen API is not enabled/available (ahem, iOS...)
@@ -414,7 +412,8 @@ define('composer', [
 		tagRowContainer.toggleClass('hide', false);
 
 		$(window).trigger('action:composer.enhanced', {
-			postContainer: postContainer
+			postContainer: postContainer,
+			postData: postData,
 		});
 	};
 
@@ -675,13 +674,14 @@ define('composer', [
 				tags: tags.getTags(post_uuid)
 			};
 		}
-
-		$(window).trigger('action:composer.submit', {
+		var submitHookData = {
 			composerEl: postContainer,
 			action: action,
 			composerData: composerData,
-			postData: postData
-		});
+			postData: postData,
+			redirect: true,
+		}
+		$(window).trigger('action:composer.submit', submitHookData);
 
 		// Minimize composer (and set textarea as readonly) while submitting
 		var taskbarIconEl = $('#taskbar .composer[data-uuid="' + post_uuid + '"] i');
@@ -710,16 +710,16 @@ define('composer', [
 				bootbox.alert(data.message);
 			} else {
 				if (action === 'topics.post') {
-					ajaxify.go('topic/' + data.slug, undefined, (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm') ? true : false);
+					if (submitHookData.redirect) {
+						ajaxify.go('topic/' + data.slug, undefined, (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm') ? true : false);
+					}
 				} else if (action === 'posts.reply') {
 					if (onComposeRoute || composer.bsEnvironment === 'xs' || composer.bsEnvironment === 'sm') {
 						window.history.back();
-					} else if (ajaxify.data.template.topic) {
-						if (parseInt(postData.tid, 10) !== parseInt(ajaxify.data.tid, 10)) {
-							ajaxify.go('post/' + data.pid);
-						}
-						// else, we're in the same topic, no nav required
-					} else {
+					} else if (submitHookData.redirect &&
+						((ajaxify.data.template.name !== 'topic') ||
+						(ajaxify.data.template.topic && parseInt(postData.tid, 10) !== parseInt(ajaxify.data.tid, 10)))
+					) {
 						ajaxify.go('post/' + data.pid);
 					}
 				} else {
