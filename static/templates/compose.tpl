@@ -27,19 +27,7 @@
 				<!-- ELSE -->
 				<span class="title">[[topic:composer.replying_to, "{topicTitle}"]]</span>
 				<!-- ENDIF isTopicOrMain -->
-				<ul class="dropdown-menu quick-search-results hidden"></ul>
 			</div>
-			<!-- ELSE -->
-			<div class="<!-- IF isTopic -->col-lg-9<!-- ELSE -->col-lg-12<!-- ENDIF isTopic --> col-md-12">
-				<!-- IF isTopicOrMain -->
-				<input name="title" form="compose-form" class="title form-control" type="text" tabindex="1" placeholder="[[topic:composer.title_placeholder]]" value="{topicTitle}"/>
-				<!-- ELSE -->
-				<span class="title">[[topic:composer.replying_to, "{topicTitle}"]]</span>
-				<!-- ENDIF isTopicOrMain -->
-			</div>
-			<!-- ENDIF showHandleInput -->
-			<!-- IF isTopic -->
-			<div class="category-list-container col-3">
 
 			<!-- IF isTopic -->
 			<div class="category-list-container col-lg-3 col-md-3"></div>
@@ -66,11 +54,8 @@
 						</li>
 						<!-- ENDIF privileges.upload:post:image -->
 						<!-- IF privileges.upload:post:file -->
-						<li class="file-upload-btn hide" data-format="upload" tabindex="-1">
-							<span class="fa-stack">
-								<i class="fa fa-file-o fa-stack-1x"></i>
-								<i class="fa fa-arrow-up fa-stack-1x"></i>
-							</span>
+						<li class="file-upload-btn hide" data-format="upload" tabindex="-1" title="[[modules:composer.upload-file]]">
+							<i class="fa fa-upload"></i>
 						</li>
 						<!-- ENDIF privileges.upload:post:file -->
 					<!--<![endif]-->
